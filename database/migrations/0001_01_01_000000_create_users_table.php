@@ -11,34 +11,16 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-
             $table->id();
-
-            $table->text('first_name')->nullable();
-            $table->string('first_name_x')->index();
-
-            $table->text('last_name')->nullable();
-            $table->string('last_name_x')->index();
-
-            $table->text('email')->unique();
-            $table->string('email_x')->unique()->index();
-
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('email')->unique()->index();
             $table->string('password');
-
-            $table->text('gender')->nullable();
-            $table->string('gender_x')->nullable()->index();
-
-            $table->text('dob')->nullable();
-            $table->string('dob_x')->nullable()->index();
-
-            $table->text('stripe_id')->nullable();
-            $table->string('stripe_id_x')->nullable()->index();
-
-            $table->text('paypal_id')->nullable();
-            $table->string('paypal_id_x')->nullable()->index();
-
+            $table->string('gender')->nullable();
+            $table->string('dob')->nullable();
+            $table->string('stripe_id')->nullable();
+            $table->string('paypal_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

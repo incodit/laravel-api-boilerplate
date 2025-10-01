@@ -65,11 +65,6 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        'users_encrypted' => [
-            'driver' => 'encrypted_email',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
-        ],
-
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

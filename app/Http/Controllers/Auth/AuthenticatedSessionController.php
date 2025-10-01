@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -17,7 +18,7 @@ class AuthenticatedSessionController extends Controller
     private function createTokens(User $user): array
     {
         // Create an access token (short-lived)
-        $accessTokenExpiry = now()->addMinutes((int) config('sanctum.expiration', 60));
+        $accessTokenExpiry = now()->addMinutes((int)config('sanctum.expiration', 60));
         $accessToken = $user->createToken('access-token', ['access'], $accessTokenExpiry)->plainTextToken;
 
         // Create a refresh token (long-lived)
@@ -28,21 +29,23 @@ class AuthenticatedSessionController extends Controller
             'user' => $user,
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
-            'expires_in' => (int) config('sanctum.expiration', 60) * 60 // in seconds
+            'expires_in' => (int)config('sanctum.expiration', 60) * 60 // in seconds
         ];
     }
+
     /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): JsonResponse
     {
-        $user = $request->authenticate();
+        $request->authenticate();
 
         // Session-based authentication (for web clients)
         // $request->session()->regenerate();
         // return response()->noContent();
 
         // Token-based authentication (for API clients)
+        $user = Auth::user();
         return response()->json($this->createTokens($user));
     }
 

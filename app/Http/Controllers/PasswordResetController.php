@@ -22,10 +22,8 @@ class PasswordResetController extends Controller
         ]);
 
         $email = $request->input('email');
-        
-        // Find user by encrypted email
-        $emailHash = hash_hmac('sha256', mb_strtolower(trim($email)), config('app.key'));
-        $user = User::where('email_x', $emailHash)->first();
+
+        $user = User::where('email', $email)->first();
 
         if (!$user) {
             return response()->json([
@@ -35,9 +33,9 @@ class PasswordResetController extends Controller
 
         try {
             // Generate 6-digit code
-            $code = str_pad((string) random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
-            
-            // Store in password_reset_tokens table
+            $code = str_pad((string)random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
+
+            // Store in the password_reset_tokens table
             DB::table('password_reset_tokens')->updateOrInsert(
                 ['email' => $email],
                 [
@@ -74,10 +72,8 @@ class PasswordResetController extends Controller
 
         $email = $request->input('email');
         $code = $request->input('code');
-        
-        // Find user by encrypted email
-        $emailHash = hash_hmac('sha256', mb_strtolower(trim($email)), config('app.key'));
-        $user = User::where('email_x', $emailHash)->first();
+
+        $user = User::where('email', $email)->first();
 
         if (!$user) {
             return response()->json([
@@ -96,7 +92,7 @@ class PasswordResetController extends Controller
             ], 400);
         }
 
-        // Check if token is expired (60 minutes)
+        // Check if the token is expired (60 minutes)
         if (now()->diffInMinutes($resetRecord->created_at) > 60) {
             DB::table('password_reset_tokens')->where('email', $email)->delete();
             return response()->json([

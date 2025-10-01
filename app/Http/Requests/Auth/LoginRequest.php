@@ -40,20 +40,19 @@ class LoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): User
+    public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-        $x = hash_hmac('sha256', mb_strtolower(trim($this->input('email'))), config('app.key'));
-        $user = User::where('email_x', $x)->first();
-        if (!$user || !Hash::check($this->input('password'), $user->password)) {
+
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
+
         RateLimiter::clear($this->throttleKey());
-        return $user;
     }
 
     /**
